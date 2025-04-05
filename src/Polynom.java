@@ -133,20 +133,26 @@ public class Polynom {
             if (coeff == 0) {
                 continue;
             }
-
+;
             // Handle the formatting for each term
             if (i > 0) {
                 // Add a '+' or '-' between terms (based on the sign of the coefficient)
                 sb.append(coeff > 0 ? " + " : " - ");
-                sb.append(Math.abs(coeff));
+                if (exp != 0) {
+                    sb.append(Math.abs(coeff) == 1 ? "" : Math.abs(coeff));
+                } else {
+                    sb.append(Math.abs(coeff));
+                }
             } else {
-                sb.append(coeff == 1 ? "" : coeff);
+                if (exp != 0) {
+                    sb.append(coeff == -1 ? "-" : coeff);
+                } else {
+                    sb.append(coeff);
+                }
             }
 
-            // Print the exponent part as requested (e.g., x^2)
             if (exp != 0) {
-                sb.append("x^");
-                sb.append(exp);
+                sb.append(exp == 1 ? "x" : "x^" + exp);
             }
         }
 
