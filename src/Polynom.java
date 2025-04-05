@@ -145,7 +145,9 @@ public class Polynom {
                 }
             } else {
                 if (exp != 0) {
-                    sb.append(coeff == -1 ? "-" : coeff);
+                    if (coeff != 1) {
+                        sb.append(coeff == -1 ? "-" : coeff);
+                    }
                 } else {
                     sb.append(coeff);
                 }
