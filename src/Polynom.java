@@ -121,6 +121,7 @@ public class Polynom {
         return new Polynom(diffPoly);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
