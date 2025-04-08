@@ -162,14 +162,22 @@ public class Polynom {
         return sb.length() > 0 ? sb.toString() : "0";
     }
 
-    public boolean equals(Polynom other) {
-        if (other == null || this.poly.size() != other.poly.size()) {
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        } if (!(other instanceof Polynom)) {
+            return false;
+        } 
+        
+        Polynom that = (Polynom) other;
+        if (other == null || this.poly.size() != that.poly.size()) {
             return false; // Different sizes, cannot be equal
         }
 
         for (int i = 0; i < this.poly.size(); i++) {
             double[] thisTerm = parseTerm(this.poly.get(i));
-            double[] otherTerm = parseTerm(other.poly.get(i));
+            double[] otherTerm = parseTerm(that.poly.get(i));
 
             // Check if the terms have the same coefficient and exponent
             if (thisTerm[0] != otherTerm[0] || thisTerm[1] != otherTerm[1]) {
