@@ -125,7 +125,7 @@ public class Polynom {
             if (coeff == 0) {
                 continue;
             }
-;
+
             // Handle the formatting for each term
             if (i > 0) {
                 // Add a '+' or '-' between terms (based on the sign of the coefficient)
