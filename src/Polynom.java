@@ -1,9 +1,10 @@
+import javafx.util.Pair;
 import java.util.*;
 
 public class Polynom {
-    private ArrayList<String> poly;
+    private ArrayList<Pair<Double, Integer>> poly;
 
-    public Polynom(ArrayList<String> poly) {
+    public Polynom(ArrayList<Pair<Double, Integer>> poly) {
         this.poly = new ArrayList<>(poly);
     }
 
@@ -29,8 +30,9 @@ public class Polynom {
             // Build polynomial array
             for (int i = 0; i < n; i++) {
                 if (coeffs[indices[i]] != 0) {
-                    String elem = coeffs[indices[i]] + ", " + exps[indices[i]];
-                    poly.add(elem);
+                    Pair<Double, Integer> pair = new Pair<>(coeffs[indices[i]], exps[indices[i]]);
+                    poly.add(pair);
+
                 }
             }
         } catch (Exception e) {
@@ -38,21 +40,11 @@ public class Polynom {
         }
     }
 
-    // Helper method to parse the term string into a coefficient and exponent.
-    private static double[] parseTerm(String term) {
-        // Expected format: "coefficient, exponent"
-        String[] parts = term.split(",");
-        double coeff = Double.parseDouble(parts[0].trim());
-        int exp = Integer.parseInt(parts[1].trim());
-        return new double[]{coeff, exp}; // index 0 is coeff, index 1 is exp (as double)
-    }
-
     // Helper method to process polynomial terms and update the map
-    private static void addTermsToMap(Map<Integer, Double> map, ArrayList<String> poly) {
-        for (String term : poly) {
-            double[] parsedTerm = parseTerm(term);
-            int exponent = (int) parsedTerm[1];
-            double coefficient = parsedTerm[0];
+    private static void addTermsToMap(Map<Integer, Double> map, ArrayList<Pair<Double, Integer>> poly) {
+        for (Pair<Double, Integer> term : poly) {
+            double coefficient = term.getKey();
+            int exponent = term.getValue();
             if (coefficient == 0) {
                 return;
             }
@@ -88,9 +80,8 @@ public class Polynom {
         int[] exps = new int[poly.size()];
 
         for (int i = 0; i < poly.size(); i++) {
-            double[] parsed = parseTerm(poly.get(i));
-            coeffs[i] = -parsed[0];
-            exps[i] = (int) parsed[1];
+            coeffs[i] = -poly.get(i).getKey();
+            exps[i] = poly.get(i).getValue();
         }
 
         return new Polynom(coeffs, exps);
@@ -102,19 +93,20 @@ public class Polynom {
     }
 
     public Polynom diff() {
-        ArrayList<String> diffPoly = new ArrayList<>();
+        ArrayList<Pair<Double, Integer>> diffPoly = new ArrayList<>();
 
-        for (String term : this.poly) {
-            double[] parsedTerm = parseTerm(term);
-            double coeff = parsedTerm[0];
-            int exp = (int) parsedTerm[1];
+        for (Pair<Double, Integer> term : this.poly) {
+            double coeff = term.getKey();
+            int exp = term.getValue();
 
             // Differentiate: if the exponent is 0, remove the term.
             if (exp > 0) {
                 double newCoeff = coeff * exp;
                 int newExp = exp - 1;
+                Pair<Double, Integer> pair = new Pair<>(newCoeff, newExp);
+
                 // Add the differentiated term as a string in the form "coefficient, exponent"
-                diffPoly.add(newCoeff + ", " + newExp);
+                diffPoly.add(pair);
             }
         }
 
@@ -127,9 +119,8 @@ public class Polynom {
 
         // Iterate over the terms of the polynomial
         for (int i = 0; i < poly.size(); i++) {
-            double[] parsedTerm = parseTerm(poly.get(i));
-            double coeff = parsedTerm[0];
-            int exp = (int) parsedTerm[1];
+            double coeff = poly.get(i).getKey();
+            int exp = poly.get(i).getValue();
 
             if (coeff == 0) {
                 continue;
@@ -171,16 +162,17 @@ public class Polynom {
         } 
         
         Polynom that = (Polynom) other;
-        if (other == null || this.poly.size() != that.poly.size()) {
+        if (this.poly.size() != that.poly.size()) {
             return false; // Different sizes, cannot be equal
         }
 
         for (int i = 0; i < this.poly.size(); i++) {
-            double[] thisTerm = parseTerm(this.poly.get(i));
-            double[] otherTerm = parseTerm(that.poly.get(i));
+            Pair<Double, Integer> thisTerm = this.poly.get(i);
+            Pair<Double, Integer> otherTerm = that.poly.get(i);
 
             // Check if the terms have the same coefficient and exponent
-            if (thisTerm[0] != otherTerm[0] || thisTerm[1] != otherTerm[1]) {
+            if (!thisTerm.getKey().equals(otherTerm.getKey())
+                || !thisTerm.getValue().equals(otherTerm.getValue())) {
                 return false;
             }
         }
