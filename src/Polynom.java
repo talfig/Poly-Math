@@ -19,44 +19,6 @@ public class Polynom {
     }
 
     /**
-     * Constructor that initializes the polynomial from arrays of coefficients and exponents.
-     * Coefficients are sorted in descending order of exponents.
-     *
-     * @param coeffs Array of coefficients for the polynomial.
-     * @param exps   Array of exponents corresponding to the coefficients.
-     */
-    public Polynom(double[] coeffs, int[] exps) {
-        try {
-            // Check if arrays are of the same length
-            if (coeffs.length != exps.length) {
-                throw new Exception("Coefficients and exponents arrays must have the same size.");
-            }
-
-            int n = coeffs.length;
-            poly = new ArrayList<>();
-
-            // Create array of indices [0, 1, 2, ..., n-1]
-            Integer[] indices = new Integer[n];
-            for (int i = 0; i < n; i++) {
-                indices[i] = i;
-            }
-
-            // Sort indices by corresponding exponents in descending order
-            Arrays.sort(indices, (a, b) -> Integer.compare(exps[b], exps[a]));
-
-            // Build polynomial array
-            for (int i = 0; i < n; i++) {
-                if (coeffs[indices[i]] != 0) {
-                    Pair<Double, Integer> pair = new Pair<>(coeffs[indices[i]], exps[indices[i]]);
-                    poly.add(pair);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    /**
      * Helper method to add terms to a map, combining terms with the same exponent.
      *
      * @param map  The map where terms are stored with the exponent as the key.
@@ -70,6 +32,49 @@ public class Polynom {
                 return;
             }
             map.put(exponent, map.getOrDefault(exponent, 0.0) + coefficient);
+        }
+    }
+
+    /**
+     * Constructor that initializes the polynomial from arrays of coefficients and exponents.
+     * Coefficients are sorted in descending order of exponents.
+     *
+     * @param coeffs Array of coefficients for the polynomial.
+     * @param exps   Array of exponents corresponding to the coefficients.
+     */
+    public Polynom(double[] coeffs, int[] exps) {
+        try {
+            if (coeffs.length != exps.length) {
+                throw new Exception("Coefficients and exponents arrays must have the same size.");
+            }
+
+            // Collect non-zero terms as (coefficient, exponent) pairs
+            ArrayList<Pair<Double, Integer>> temp = new ArrayList<>();
+            for (int i = 0; i < coeffs.length; i++) {
+                if (coeffs[i] != 0) {
+                    temp.add(new Pair<>(coeffs[i], exps[i]));
+                }
+            }
+
+            // Merge terms with the same exponent
+            Map<Integer, Double> map = new HashMap<>();
+            addTermsToMap(map, temp);
+
+            // Remove zero-coefficient terms
+            map.entrySet().removeIf(entry -> entry.getValue() == 0.0);
+
+            // Sort terms by exponent in descending order
+            List<Map.Entry<Integer, Double>> sortedEntries = new ArrayList<>(map.entrySet());
+            sortedEntries.sort((a, b) -> Integer.compare(b.getKey(), a.getKey()));
+
+            // Build the internal polynomial list
+            poly = new ArrayList<>();
+            for (Map.Entry<Integer, Double> entry : sortedEntries) {
+                poly.add(new Pair<>(entry.getValue(), entry.getKey()));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
