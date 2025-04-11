@@ -1,13 +1,30 @@
 import javafx.util.Pair;
 import java.util.*;
 
+/**
+ * This class represents a polynomial, supporting operations such as addition, subtraction, and differentiation.
+ * Polynomials are stored as a list of terms, where each term is represented by a coefficient and an exponent.
+ */
 public class Polynom {
+    // List to store terms of the polynomial as pairs of (coefficient, exponent)
     private ArrayList<Pair<Double, Integer>> poly;
 
+    /**
+     * Constructor that initializes the polynomial from an existing list of pairs (coefficient, exponent).
+     *
+     * @param poly The list of pairs representing the polynomial terms.
+     */
     public Polynom(ArrayList<Pair<Double, Integer>> poly) {
         this.poly = new ArrayList<>(poly);
     }
 
+    /**
+     * Constructor that initializes the polynomial from arrays of coefficients and exponents.
+     * Coefficients are sorted in descending order of exponents.
+     *
+     * @param coeffs Array of coefficients for the polynomial.
+     * @param exps   Array of exponents corresponding to the coefficients.
+     */
     public Polynom(double[] coeffs, int[] exps) {
         try {
             // Check if arrays are of the same length
@@ -24,7 +41,7 @@ public class Polynom {
                 indices[i] = i;
             }
 
-            // Sort indices by corresponding exps in descending order
+            // Sort indices by corresponding exponents in descending order
             Arrays.sort(indices, (a, b) -> Integer.compare(exps[b], exps[a]));
 
             // Build polynomial array
@@ -32,15 +49,19 @@ public class Polynom {
                 if (coeffs[indices[i]] != 0) {
                     Pair<Double, Integer> pair = new Pair<>(coeffs[indices[i]], exps[indices[i]]);
                     poly.add(pair);
-
                 }
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
-    // Helper method to process polynomial terms and update the map
+    /**
+     * Helper method to add terms to a map, combining terms with the same exponent.
+     *
+     * @param map  The map where terms are stored with the exponent as the key.
+     * @param poly The polynomial terms to be added to the map.
+     */
     private static void addTermsToMap(Map<Integer, Double> map, ArrayList<Pair<Double, Integer>> poly) {
         for (Pair<Double, Integer> term : poly) {
             double coefficient = term.getKey();
@@ -52,7 +73,12 @@ public class Polynom {
         }
     }
 
-    // Adds two polynomials and returns a new Polynom
+    /**
+     * Adds this polynomial to another polynomial and returns the resulting polynomial.
+     *
+     * @param other The polynomial to be added.
+     * @return A new polynomial representing the sum of this polynomial and the other polynomial.
+     */
     public Polynom plus(Polynom other) {
         Map<Integer, Double> map = new HashMap<>();
 
@@ -65,6 +91,7 @@ public class Polynom {
         int[] exps = new int[n];
         int i = 0;
 
+        // Convert map entries to arrays for the new polynomial
         for (Map.Entry<Integer, Double> e : map.entrySet()) {
             exps[i] = e.getKey();
             coeffs[i] = e.getValue();
@@ -74,7 +101,11 @@ public class Polynom {
         return new Polynom(coeffs, exps);
     }
 
-    // Negates the coefficients of the polynomial
+    /**
+     * Negates the coefficients of the polynomial and returns the resulting polynomial.
+     *
+     * @return A new polynomial with negated coefficients.
+     */
     private Polynom negate() {
         double[] coeffs = new double[poly.size()];
         int[] exps = new int[poly.size()];
@@ -87,11 +118,23 @@ public class Polynom {
         return new Polynom(coeffs, exps);
     }
 
+    /**
+     * Subtracts another polynomial from this polynomial and returns the resulting polynomial.
+     *
+     * @param other The polynomial to be subtracted.
+     * @return A new polynomial representing the difference of this polynomial and the other polynomial.
+     */
     public Polynom minus(Polynom other) {
         Polynom negateOther = other.negate();
         return this.plus(negateOther);
     }
 
+    /**
+     * Differentiates this polynomial and returns the resulting polynomial.
+     * The degree of each term is reduced by 1, and the coefficient is multiplied by the original exponent.
+     *
+     * @return A new polynomial representing the derivative of this polynomial.
+     */
     public Polynom diff() {
         ArrayList<Pair<Double, Integer>> diffPoly = new ArrayList<>();
 
@@ -105,7 +148,7 @@ public class Polynom {
                 int newExp = exp - 1;
                 Pair<Double, Integer> pair = new Pair<>(newCoeff, newExp);
 
-                // Add the differentiated term as a string in the form "coefficient, exponent"
+                // Add the differentiated term
                 diffPoly.add(pair);
             }
         }
@@ -113,6 +156,11 @@ public class Polynom {
         return new Polynom(diffPoly);
     }
 
+    /**
+     * Converts the polynomial to a string representation.
+     *
+     * @return A string representation of the polynomial.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -153,26 +201,35 @@ public class Polynom {
         return sb.length() > 0 ? sb.toString() : "0";
     }
 
+    /**
+     * Checks whether this polynomial is equal to another polynomial.
+     *
+     * @param other The other object to compare.
+     * @return True if the polynomials are equal, false otherwise.
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
             return true;
-        } if (!(other instanceof Polynom)) {
+        }
+        if (!(other instanceof Polynom)) {
             return false;
-        } 
-        
-        Polynom that = (Polynom) other;
-        if (this.poly.size() != that.poly.size()) {
-            return false; // Different sizes, cannot be equal
         }
 
+        Polynom that = (Polynom) other;
+
+        // Check if polynomials have the same size
+        if (this.poly.size() != that.poly.size()) {
+            return false;
+        }
+
+        // Check if each term has the same coefficient and exponent
         for (int i = 0; i < this.poly.size(); i++) {
             Pair<Double, Integer> thisTerm = this.poly.get(i);
             Pair<Double, Integer> otherTerm = that.poly.get(i);
 
-            // Check if the terms have the same coefficient and exponent
-            if (!thisTerm.getKey().equals(otherTerm.getKey())
-                || !thisTerm.getValue().equals(otherTerm.getValue())) {
+            if (!thisTerm.getKey().equals(otherTerm.getKey()) ||
+                    !thisTerm.getValue().equals(otherTerm.getValue())) {
                 return false;
             }
         }
