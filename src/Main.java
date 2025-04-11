@@ -31,7 +31,7 @@ public class Main {
                         coeffs[i] = Double.parseDouble(parts[0].trim());
                         exps[i] = Integer.parseInt(parts[1].trim());
                         validInput = true; // If parsing succeeds, input is valid
-                    } catch (InputMismatchException e) {
+                    } catch (NumberFormatException e) {
                         System.out.println("Invalid input! Make sure to enter a number for both coefficient and exponent.");
                     }
                 } else {
@@ -55,17 +55,11 @@ public class Main {
         while (!validInput) {
             System.out.println(prompt);
             try {
-                n = scanner.nextInt();
-                scanner.nextLine();  // Consume newline
-                if (n <= 0) {
-                    throw new IllegalArgumentException("The number of terms must be a positive integer.");
-                }
+                // Parse and store the number of terms
+                n = Integer.parseInt(scanner.nextLine());
                 validInput = true;  // Input is valid, exit loop
-            } catch (InputMismatchException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
-                scanner.nextLine();  // Clear the buffer
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
             }
         }
         return n;
